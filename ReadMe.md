@@ -7,6 +7,7 @@ This script scrapes the TV names of current webpage and copy them to clipboard.
 Items without check mark are future plans.
 
 - [x] Now it only supports The Movie Data Base (TMDB).
+- [x] Auto-detect webpage language: Chines (ZH) or not. 
 - [ ] Customized copy format.
 - [ ] Being able to save customized format.
 

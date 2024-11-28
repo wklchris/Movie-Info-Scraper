@@ -55,7 +55,7 @@
     };
     var s = fname;
     for (const [c, val] of Object.entries(escapes)) {
-      s = s.replace(c, val);
+      s = s.replaceAll(c, val);
     }
     return s;
   }

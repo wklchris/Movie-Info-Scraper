@@ -48,8 +48,8 @@
   //     [TV Series Name]-S[Season]E[Eposide].[Current Eposide Title]
   function copyTVNames(copyMessage='') {
       var parentDOM = document.getElementsByTagName('h3');
-      // Split by word 'Season' and remove the tailing colon
-      var tvtitle = $(document).find("title").text().split('Season')[0].trim().slice(0, -1);
+      // Split by last left paren '(' to remove year
+      var tvtitle = document.querySelector('div.title').innerText.split('(').slice(0, -1).join('(').trim();
       var fileNameGroup = [];
       for (var i = 0; i < parentDOM.length; i++) {
           var ep = parentDOM[i].querySelector(".no_click.open");

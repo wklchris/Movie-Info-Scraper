@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Movie Info Scraper
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.2.0
 // @description  Scrape the movie/TV information from a webpage.
 // @author       wklchris
 // @match      https://www.themoviedb.org/tv/*
@@ -17,10 +17,10 @@
   var isHtmlLangZh = (htmlLanguage.indexOf('zh') >= 0);
 
   var btnText = "Copy TV names to Clipboard";
-  var copyMessage = "TV filenames have been copied to clipboard.";
+  var copyMessage = "TV filenames have been copied to clipboard. Example:";
   if (isHtmlLangZh) {
       btnText = "复制 TV 名称";
-      copyMessage = "TV 名称已复制到剪贴板。";
+      copyMessage = "TV 名称已复制到剪贴板。示例：";
   }
 
   // Copy a string variable to clipboard.
@@ -43,6 +43,22 @@
       // Delete the element
       document.body.removeChild(strArea);
   }
+  
+  // Replace invalid characters in filename strings
+  function escapeCharsInFilename(fname) {
+    var escapes = {
+      "!": "！", "?": "？",
+      ":": "：", ";": "；",
+      "/": "-", "\\": "-", "|": "-",
+      "%": "-", "*": "-", "\"": '-',
+      "<": "(", ">": ")"
+    };
+    var s = fname;
+    for (const [c, val] of Object.entries(escapes)) {
+      s = s.replace(c, val);
+    }
+    return s;
+  }
 
   // Copy all TV names in current webpage, with a Kodi-compatible format:
   //     [TV Series Name]-S[Season]E[Eposide].[Current Eposide Title]
@@ -59,9 +75,12 @@
               var eptitle = ep.innerHTML;
               // Filenames are in a Kodi-compatible format
               var fname = tvtitle + '-S' + season.padStart(2, '0') + 'E' + episode.padStart(2, '0') + '.' + eptitle;
+              fname = escapeCharsInFilename(fname);
               fileNameGroup.push(fname);
           }
       }
+      // Add an example from copied filenames
+      copyMessage += `\n\n${fileNameGroup[0]}\n... (total ${fileNameGroup.length})`;
       copyToClipboard(fileNameGroup.join('\n'), copyMessage);
   }
 

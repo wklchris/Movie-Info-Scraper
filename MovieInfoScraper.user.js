@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Movie Info Scraper
 // @namespace    http://tampermonkey.net/
-// @version      0.2.0
+// @version      0.2.2
 // @description  Scrape the movie/TV information from a webpage.
 // @author       wklchris
 // @match      https://www.themoviedb.org/tv/*
@@ -45,7 +45,7 @@
   }
   
   // Replace invalid characters in filename strings
-  function escapeCharsInFilename(fname) {
+  function escapeCharsInFilename(fname, isHtmlLangZh) {
     var escapes = {
       "!": "！", "?": "？",
       ":": "：", ";": "；",
@@ -53,6 +53,12 @@
       "%": "-", "*": "-", "\"": '-',
       "<": "(", ">": ")"
     };
+    // For non-zh user, disable zh punctuations
+    if (!isHtmlLangZh) {
+      for (const c of ["!", "?", ":", ";"]) {
+        escapes[c] = ""
+      }
+    }
     var s = fname;
     for (const [c, val] of Object.entries(escapes)) {
       s = s.replaceAll(c, val);
@@ -64,8 +70,8 @@
   //     [TV Series Name]-S[Season]E[Eposide].[Current Eposide Title]
   function copyTVNames(copyMessage='') {
       var parentDOM = document.getElementsByTagName('h3');
-      // Split by last left paren '(' to remove year
-      var tvtitle = document.querySelector('div.title').innerText.split('(').slice(0, -1).join('(').trim();
+      // Split by colon for tvtitle
+      var tvtitle = document.title.split(': ')[0].trim();
       var fileNameGroup = [];
       for (var i = 0; i < parentDOM.length; i++) {
           var ep = parentDOM[i].querySelector(".no_click.open");
